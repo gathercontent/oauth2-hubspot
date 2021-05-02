@@ -1,4 +1,5 @@
 <?php
+
 namespace HelpScout\OAuth2\Client\Provider;
 
 use League\OAuth2\Client\Provider\AbstractProvider;
@@ -63,7 +64,7 @@ class HubSpot extends AbstractProvider
 
     /**
      * @param ResponseInterface $response
-     * @param array|string      $data
+     * @param array|string $data
      *
      * @throws IdentityProviderException
      */
@@ -82,7 +83,7 @@ class HubSpot extends AbstractProvider
     /**
      * Generate a minimal user object from a successful user details request.
      *
-     * @param array       $response
+     * @param array $response
      * @param AccessToken $token
      *
      * @return HubSpotResourceOwner
