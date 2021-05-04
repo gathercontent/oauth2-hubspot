@@ -1,20 +1,19 @@
 <?php
+
 namespace HelpScout\OAuth2\Client\Test;
 
 use GuzzleHttp\ClientInterface;
 use HelpScout\OAuth2\Client\Provider\HubSpot;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
 class HubSpotTest extends TestCase
 {
-    /**
-     * @var HubSpot
-     */
-    protected $provider;
+    protected HubSpot $provider;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->provider = new HubSpot([
             'clientId' => 'mock_client_id',
@@ -57,8 +56,9 @@ class HubSpotTest extends TestCase
         ];
 
         $url = $this->provider->getAuthorizationUrl($options);
+        parse_str(parse_url($url)['query'], $query);
 
-        $this->assertContains(implode('%20', $options['scope']), $url);
+        $this->assertEquals(implode(' ', $options['scope']), $query['scope']);
     }
 
     public function testGetAuthorizationUrl()
@@ -149,12 +149,10 @@ class HubSpotTest extends TestCase
         $this->assertEquals($accessTokenInfo['hub_domain'], $user->getHubSpotDomain());
     }
 
-    /**
-     * @expectedException \League\OAuth2\Client\Provider\Exception\IdentityProviderException
-     */
     public function testExceptionThrownWhenErrorReceived()
     {
-        $status = rand(401,599);
+        $this->expectException(IdentityProviderException::class);
+        $status = rand(401, 599);
         $postResponseMock = $this->getMockBuilder(ResponseInterface::class)->getMock();
         $postResponseMock->method('getBody')->willReturn('{"error": "error_code","error_description": "A human readable error message"}');
         $postResponseMock->method('getHeader')->willReturn(['content-type' => 'json']);
